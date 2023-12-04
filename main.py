@@ -3,15 +3,10 @@ import hashlib
 
 
 class DSA:
-    def __init__(self, p_n_bit_size, q_n_bit_size):
-        self.L = p_n_bit_size
-        self.N = q_n_bit_size
 
-    # L = 512  # p size
-    # N = 160  # q size
-
+    # noinspection PyShadowingNames
     @staticmethod
-    def _rabin_miller(num):
+    def _is_prime_rabin_miller(num):
         s = num - 1
         t = 0
 
@@ -60,29 +55,7 @@ class DSA:
             if num % prime == 0:
                 return False
 
-        return DSA._rabin_miller(num)
-
-    @staticmethod
-    def get_prime(n_bit_size):
-        while True:
-            num = random.randrange(2 ** (n_bit_size - 1), 2 ** n_bit_size)
-            if DSA._is_prime(num):
-                return num
-
-    def get_p_from_q(self, q):
-        while True:
-            t = random.randint(2 << (self.L - self.N - 1), (2 << (self.L - self.N)) - 1)
-            p = t * q + 1
-            if len(str(bin(p))) - 2 == self.L and DSA._is_prime(p):
-                return p
-
-    def get_g(self, p, q):
-        while True:
-            a = random.randrange(1, q - 1)
-            g = pow(a, (p - 1) // q, p)
-
-            if g > 1:
-                return g
+        return DSA._is_prime_rabin_miller(num)
 
     @staticmethod
     def _ex_gcd(a, b, arr):
@@ -97,6 +70,34 @@ class DSA:
         return g
 
     @staticmethod
+    def _get_new_prime(n_bit_size):
+        while True:
+            num = random.randrange(2 ** (n_bit_size - 1), 2 ** n_bit_size)
+            if DSA._is_prime(num):
+                return num
+
+    @staticmethod
+    def get_new_q(n_bit_size):
+        return DSA._get_new_prime(n_bit_size)
+
+    @staticmethod
+    def get_new_p_from_q(q, L, N):
+        while True:
+            t = random.randint(2 << (L - N - 1), (2 << (L - N)) - 1)
+            p = t * q + 1
+            if len(str(bin(p))) - 2 == L and DSA._is_prime(p):
+                return p
+
+    @staticmethod
+    def get_new_g(p, q):
+        while True:
+            a = random.randrange(1, q - 1)
+            g = pow(a, (p - 1) // q, p)
+
+            if g > 1:
+                return g
+
+    @staticmethod
     def mod_reverse(a, n):  # ax = 1 (mod n) Нахождение обратного
         arr = [0, 1]
         gcd = DSA._ex_gcd(a, n, arr)
@@ -105,42 +106,57 @@ class DSA:
         else:
             return -1
 
+    def __init__(self, p_n_bit_size, q_n_bit_size, p=None, q=None, g=None):
+
+        self._L = p_n_bit_size
+        self._N = q_n_bit_size
+
+        self._q = q or DSA.get_new_q(self._N)
+        self._p = p or DSA.get_new_p_from_q(self._q, self._L, self._N)
+        self._g = g or DSA.get_new_g(self._p, self._q)
+
+    def get_crypto_parameters(self) -> dict:
+        return {'p': self._p, 'q': self._q, 'g': self._g}
+
+    def generate_new_keys(self) -> dict:
+        # x - закрытый ключ
+        x = random.randrange(1, self._q - 1)
+        # y - открытый ключ
+        y = pow(self._g, x, self._p)
+        return {'x': x, 'y': y}
+
+    def sign_str(self, message: str, x) -> dict:
+        # хеш
+        h = int(hashlib.sha1(message.encode('utf-8')).hexdigest(), 16)
+
+        k = random.randint(1, self._q - 1)
+        r = pow(self._g, k, self._p) % self._q
+        s = DSA.mod_reverse(k, self._q) * (h + x * r) % self._q
+
+        return {'r': r, 's': s}
+
+    def check_sign_str(self, message: str, y: int, r: int, s: int):
+        h = int(hashlib.sha1(message.encode('utf-8')).hexdigest(), 16)
+
+        w = DSA.mod_reverse(s, self._q) % self._q
+        u1 = h * w % self._q
+        u2 = (r * w) % self._q
+        v = (pow(self._g, u1, self._p) * pow(y, u2, self._p)) % self._p % self._q
+
+        return v == r
+
 
 if __name__ == '__main__':
-    dsa = DSA(512, 160)
-    q = dsa.get_prime(160)
-    p = dsa.get_p_from_q(q)
-    g = dsa.get_g(p, q)
-    # x - закрытый ключ
-    x = random.randrange(1, q - 1)
-    # y - открытый ключ
-    y = pow(g, x, p)
+    L = 512
+    N = 160
 
-    # сообщение
-    m = "hello"
+    m = 'Hello world'
+    dsa = DSA(L, N)
+    keys = dsa.generate_new_keys()
+    sign = dsa.sign_str(m, keys['x'])
+    print(sign)
+    print(keys)
+    print(dsa.get_crypto_parameters())
+    verify = dsa.check_sign_str(m, keys['y'], **sign)
 
-    # хеш
-    h = int(hashlib.sha1(m.encode('utf-8')).hexdigest(), 16)
-
-    k = random.randint(1, q - 1)
-
-    # Подпись информации m
-    print("p:" + str(p))
-    print("q:" + str(q))
-    print("g:" + str(g))
-    print("y:" + str(y))
-    r = pow(g, k, p) % q
-
-    s = DSA.mod_reverse(k, q) * (h + x * r) % q
-
-    print("Подпись (R, S):" + str(r), str(s))
-
-    s_1 = DSA.mod_reverse(s, q)
-    w = s_1 % q
-    u1 = h * w % q
-    u2 = (r * w) % q
-    v = (pow(g, u1, p) * pow(y, u2, p)) % p % q
-    if v == r:
-        print("Подпись верна")
-    else:
-        print("Подпись неверна")
+    print(verify)
