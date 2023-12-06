@@ -1,11 +1,12 @@
 from CheckSignGUI import *
+from CreateSignGUI import *
 
 
 class StartGUI(tk.Tk):
 
     def sign(self):
         self.destroy()
-        CheckSignGUI(self.L, self.N)
+        CreateSignGUI(self.L, self.N)
 
     def check_sign(self):
         self.destroy()

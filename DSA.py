@@ -4,6 +4,14 @@ from LCGRandom import *
 
 class DSA:
 
+    def _fermat_test(self, num):
+        for _ in range(5):
+            a = self._rand.random_num(1, num - 1)
+            if pow(a, num - 1, num) != 1:
+                return False
+
+        return True
+
     # noinspection PyShadowingNames
     def _is_prime_rabin_miller(self, num):
         s = num - 1
@@ -14,7 +22,7 @@ class DSA:
             s = s // 2
             t += 1
 
-        for trials in range(5):
+        for _ in range(5):
             a = self._rand.random_num(2, num - 1)
             v = pow(a, s, num)
             if v != 1:
@@ -26,7 +34,6 @@ class DSA:
                         i = i + 1
                         v = (v ** 2) % num
         return True
-
 
     def _is_prime(self, num):
         if num < 2:
@@ -54,7 +61,7 @@ class DSA:
             if num % prime == 0:
                 return False
 
-        return self._is_prime_rabin_miller(num)
+        return self._fermat_test(num) and self._is_prime_rabin_miller(num)
 
     def _ex_gcd(self, a, b, arr):
         if b == 0:
@@ -83,7 +90,6 @@ class DSA:
             if len(str(bin(p))) - 2 == L and self._is_prime(p):
                 return p
 
-
     def get_new_g(self, p, q):
         while True:
             a = self._rand.random_num(1, q - 1)
@@ -91,7 +97,6 @@ class DSA:
 
             if g > 1:
                 return g
-
 
     def mod_reverse(self, a, n):  # ax = 1 (mod n) Нахождение обратного
         arr = [0, 1]

@@ -10,7 +10,8 @@ from DSA import *
 class CreateSignGUI(tk.Tk):
     def sign_and_save(self):
         self.sign = self.dsa.sign(self.file_hash, self.keys['x'])
-        self.dsa.save_public_certificate(filedialog.asksaveasfilename(defaultextension='pub'), self.keys['y'], **self.sign)
+        self.dsa.save_public_certificate(filedialog.asksaveasfilename(defaultextension='pub'), self.keys['y'],
+                                         **self.sign)
 
     def save_sign(self):
         self.dsa.save_private_certificate(filedialog.asksaveasfilename(defaultextension='prk'), self.keys['x'])
@@ -21,10 +22,11 @@ class CreateSignGUI(tk.Tk):
         self.wm_title("DSA")
 
         result = messagebox.askyesnocancel("Загрузить параметры из файла?", "Загрузить параметры из файла?")
-        if result == 'yes':
+        print(result)
+        if result is True:
             param = DSA.load_private_certificate(filedialog.askopenfilename())
             self.dsa = DSA(L, N, param['p'], param['q'], param['g'])
-        elif result == 'no':
+        elif result is False:
             self.dsa = DSA(L, N)
 
             seed = simpledialog.askinteger("Seed", "Введите seed для генерации", initialvalue=0)
