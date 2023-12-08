@@ -1,3 +1,6 @@
+import tkinter as tk
+from tkinter import scrolledtext
+
 import hashlib
 from LCGRandom import *
 
@@ -5,19 +8,25 @@ from LCGRandom import *
 class DSA:
 
     def _fermat_test(self, num):
+        tests = list()
+
         for _ in range(5):
             a = self._rand.random_num(1, num - 1)
             if pow(a, num - 1, num) != 1:
-                return False
-
-        return True
+                tests.append(f"pow({a}, {num - 1}, {num}) != 1\n")
+                tests.insert(0, False)
+                return tests
+            tests.append(f"pow({a}, {num - 1}, {num}) == 1\n")
+        tests.insert(0, True)
+        return tests
 
     # noinspection PyShadowingNames
     def _is_prime_rabin_miller(self, num):
+        tests = list()
+
         s = num - 1
         t = 0
 
-        # заменить
         while s % 2 == 0:
             s = s // 2
             t += 1
@@ -29,15 +38,22 @@ class DSA:
                 i = 0
                 while v != (num - 1):
                     if i == t - 1:
-                        return False
+                        tests.append(f"{i} == {t}-1\n")
+                        tests.insert(0, False)
+
+                        return tests
                     else:
                         i = i + 1
                         v = (v ** 2) % num
-        return True
+
+            tests.append(f"{v} == {num}-1\n")
+
+        tests.insert(0, True)
+        return tests
 
     def is_prime(self, num):
         if num < 2:
-            return False
+            return [False, f"{num}<2\n"]
 
         small_primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
                         101,
@@ -59,9 +75,11 @@ class DSA:
 
         for prime in small_primes:
             if num % prime == 0:
-                return False
+                return [False, f"{num} делится на простое {prime}\n"]
 
-        return self._fermat_test(num) and self._is_prime_rabin_miller(num)
+        t1 = self._fermat_test(num)
+        t2 = self._is_prime_rabin_miller(num)
+        return [(t1[0] and t2[0]), ''.join(t1[1:]), ''.join(t2[1:])]
 
     def _ex_gcd(self, a, b, arr):
         if b == 0:
@@ -75,19 +93,39 @@ class DSA:
         return g
 
     def _get_new_prime(self, n_bit_size):
+        window = tk.Tk()
+        window.title('Получение q')
+        window.grid_rowconfigure(0, weight=1)
+        text_area = scrolledtext.ScrolledText(window)
+        text_area.pack()
         while True:
             num = self._rand.random_num(2 ** (n_bit_size - 1), 2 ** n_bit_size)
-            if self.is_prime(num):
+
+            is_prime = self.is_prime(num)
+
+            text_area.insert(tk.INSERT, ''.join(is_prime[1:]))
+
+            if is_prime[0]:
                 return num
 
     def get_new_q(self, n_bit_size):
         return self._get_new_prime(n_bit_size)
 
     def get_new_p_from_q(self, q, L, N):
+        window = tk.Tk()
+        window.title('Получение p')
+        window.grid_rowconfigure(0, weight=1)
+        text_area = scrolledtext.ScrolledText(window)
+        text_area.pack()
+
         while True:
             t = self._rand.random_num(2 << (L - N - 1), (2 << (L - N)) - 1)
             p = t * q + 1
-            if len(str(bin(p))) - 2 == L and self.is_prime(p):
+
+            is_prime = self.is_prime(p)
+            text_area.insert(tk.INSERT, ''.join(is_prime[1:]))
+
+            if len(str(bin(p))) - 2 == L and is_prime[0]:
                 return p
 
     def get_new_g(self, p, q):
@@ -106,7 +144,7 @@ class DSA:
         else:
             return -1
 
-    def __init__(self, p_n_bit_size, q_n_bit_size, seed = 0, p=None, q=None, g=None):
+    def __init__(self, p_n_bit_size, q_n_bit_size, seed=0, p=None, q=None, g=None):
         self._rand = LCGRandom()
         self._rand.change_seed(seed)
 
