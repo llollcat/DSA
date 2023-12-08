@@ -34,19 +34,11 @@ class CreateSignGUI(tk.Tk):
             window = tk.Tk()
 
             param = self.dsa.get_crypto_parameters()
-            label1 = tk.Label(window, text=f"p {param['p']}")
-            label2 = tk.Label(window, text=f"p prime:  {self.dsa.is_prime(param['p'])}")
-            label3 = tk.Label(window, text=f"q {param['q']}")
-            label4 = tk.Label(window, text=f"q prime:  {self.dsa.is_prime(param['q'])}")
+            label1 = tk.Label(window, text=f"p {param['p']}\n")
+            label3 = tk.Label(window, text=f"q {param['q']}\n")
 
             label1.pack()
-            label2.pack()
             label3.pack()
-            label4.pack()
-
-
-
-
 
         else:
             self.dsa = DSA(L, N)

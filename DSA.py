@@ -92,12 +92,12 @@ class DSA:
         arr[1] = t - int(a / b) * arr[1]
         return g
 
-    def _get_new_prime(self, n_bit_size):
+    def get_new_q(self, n_bit_size):
         window = tk.Tk()
         window.title('Получение q')
         window.grid_rowconfigure(0, weight=1)
         text_area = scrolledtext.ScrolledText(window)
-        text_area.pack()
+        text_area.pack(expand=True, fill='both')
         while True:
             num = self._rand.random_num(2 ** (n_bit_size - 1), 2 ** n_bit_size)
 
@@ -106,17 +106,16 @@ class DSA:
             text_area.insert(tk.INSERT, ''.join(is_prime[1:]))
 
             if is_prime[0]:
+                text_area.insert(tk.INSERT, 'Число подошло!!!\n\n')
                 return num
-
-    def get_new_q(self, n_bit_size):
-        return self._get_new_prime(n_bit_size)
+            text_area.insert(tk.INSERT, '===Поиск другого числа===\n\n')
 
     def get_new_p_from_q(self, q, L, N):
         window = tk.Tk()
         window.title('Получение p')
         window.grid_rowconfigure(0, weight=1)
         text_area = scrolledtext.ScrolledText(window)
-        text_area.pack()
+        text_area.pack(expand=True, fill='both')
 
         while True:
             t = self._rand.random_num(2 << (L - N - 1), (2 << (L - N)) - 1)
@@ -126,7 +125,9 @@ class DSA:
             text_area.insert(tk.INSERT, ''.join(is_prime[1:]))
 
             if len(str(bin(p))) - 2 == L and is_prime[0]:
+                text_area.insert(tk.INSERT, 'Число подошло!!!\n\n')
                 return p
+            text_area.insert(tk.INSERT, '===Поиск другого числа===\n\n')
 
     def get_new_g(self, p, q):
         while True:

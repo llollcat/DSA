@@ -16,7 +16,7 @@ class CheckSignGUI(tk.Tk):
 
         self.param = DSA.load_public_certificate(self.cert_path)
 
-        self.dsa = DSA(L, N, self.param['p'], self.param['q'], self.param['g'])
+        self.dsa = DSA(L, N, 0,self.param['p'], self.param['q'], self.param['g'])
 
         messagebox.showinfo('Info', 'Выберите файл для проверки подписи')
         self.filename = filedialog.askopenfilename()
@@ -26,4 +26,3 @@ class CheckSignGUI(tk.Tk):
 
         messagebox.showinfo('Проверка подписи', "Подпись верна" if verify else "Подпись не верна")
 
-        self.mainloop()
