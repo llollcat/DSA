@@ -225,17 +225,8 @@ class DSA:
         return out
 
     @staticmethod
-    def get_file_hash(path):
-        sha1 = hashlib.sha1()
-
-        with open(path, 'rb') as f:
-            while True:
-                data = f.read(65536)
-                if not data:
-                    break
-                sha1.update(data)
-
-        return int(sha1.hexdigest(), 16)
+    def get_str_hash(message):
+        return int(hashlib.sha1(message.encode('utf-8')).hexdigest(), 16)
 
     def set_random_seed(self, seed):
         self._rand.change_seed(seed)
