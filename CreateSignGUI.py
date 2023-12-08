@@ -27,10 +27,27 @@ class CreateSignGUI(tk.Tk):
             param = DSA.load_private_certificate(filedialog.askopenfilename())
             self.dsa = DSA(L, N, param['p'], param['q'], param['g'])
         elif result is False:
-            self.dsa = DSA(L, N)
-
             seed = simpledialog.askinteger("Seed", "Введите seed для генерации", initialvalue=0)
-            self.dsa.set_random_seed(seed)
+
+            self.dsa = DSA(L, N, seed)
+
+            window = tk.Tk()
+
+            param = self.dsa.get_crypto_parameters()
+            label1 = tk.Label(window, text=f"p {param['p']}")
+            label2 = tk.Label(window, text=f"p prime:  {self.dsa.is_prime(param['p'])}")
+            label3 = tk.Label(window, text=f"q {param['q']}")
+            label4 = tk.Label(window, text=f"q prime:  {self.dsa.is_prime(param['q'])}")
+
+            label1.pack()
+            label2.pack()
+            label3.pack()
+            label4.pack()
+
+
+
+
+
         else:
             self.dsa = DSA(L, N)
 

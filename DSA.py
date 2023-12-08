@@ -35,7 +35,7 @@ class DSA:
                         v = (v ** 2) % num
         return True
 
-    def _is_prime(self, num):
+    def is_prime(self, num):
         if num < 2:
             return False
 
@@ -77,7 +77,7 @@ class DSA:
     def _get_new_prime(self, n_bit_size):
         while True:
             num = self._rand.random_num(2 ** (n_bit_size - 1), 2 ** n_bit_size)
-            if self._is_prime(num):
+            if self.is_prime(num):
                 return num
 
     def get_new_q(self, n_bit_size):
@@ -87,7 +87,7 @@ class DSA:
         while True:
             t = self._rand.random_num(2 << (L - N - 1), (2 << (L - N)) - 1)
             p = t * q + 1
-            if len(str(bin(p))) - 2 == L and self._is_prime(p):
+            if len(str(bin(p))) - 2 == L and self.is_prime(p):
                 return p
 
     def get_new_g(self, p, q):
@@ -106,8 +106,9 @@ class DSA:
         else:
             return -1
 
-    def __init__(self, p_n_bit_size, q_n_bit_size, p=None, q=None, g=None):
+    def __init__(self, p_n_bit_size, q_n_bit_size, seed = 0, p=None, q=None, g=None):
         self._rand = LCGRandom()
+        self._rand.change_seed(seed)
 
         self._L = p_n_bit_size
         self._N = q_n_bit_size
