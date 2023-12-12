@@ -4,6 +4,9 @@ from tkinter import ttk, simpledialog, messagebox
 from DSA import DSA
 
 if __name__ == '__main__':
+    # Create the main window
+    root = tk.Tk()
+
     x = None
     y = None
     h = None
@@ -12,8 +15,7 @@ if __name__ == '__main__':
     seed = simpledialog.askinteger("Seed", "Введите seed для генерации", initialvalue=0)
 
     dsa = DSA(512, 160, seed)
-    # Create the main window
-    root = tk.Tk()
+
     root.title("Отправитель")
 
     # Set the size of the window

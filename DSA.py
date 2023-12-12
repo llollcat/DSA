@@ -184,46 +184,6 @@ class DSA:
 
         return v == r
 
-    def save_public_certificate(self, filename, y, r, s):
-        with (open(filename, 'w')) as cert:
-            cert.write(f'{self._p}\n')
-            cert.write(f'{self._q}\n')
-            cert.write(f'{self._g}\n')
-            cert.write(f'{y}\n')
-            cert.write(f'{r}\n')
-            cert.write(f'{s}\n')
-            cert.close()
-
-    @staticmethod
-    def load_public_certificate(filename):
-        out = dict()
-        with (open(filename, 'r')) as cert:
-            out['p'] = int(cert.readline()[:-1])
-            out['q'] = int(cert.readline()[:-1])
-            out['g'] = int(cert.readline()[:-1])
-            out['y'] = int(cert.readline()[:-1])
-            out['r'] = int(cert.readline()[:-1])
-            out['s'] = int(cert.readline()[:-1])
-        return out
-
-    def save_private_certificate(self, filename, x):
-        with (open(filename, 'w')) as cert:
-            cert.write(f'{self._p}\n')
-            cert.write(f'{self._q}\n')
-            cert.write(f'{self._g}\n')
-            cert.write(f'{x}\n')
-            cert.close()
-
-    @staticmethod
-    def load_private_certificate(filename):
-        out = dict()
-        with (open(filename, 'r')) as cert:
-            out['p'] = int(cert.readline()[:-1])
-            out['q'] = int(cert.readline()[:-1])
-            out['g'] = int(cert.readline()[:-1])
-            out['x'] = int(cert.readline()[:-1])
-        return out
-
     @staticmethod
     def get_str_hash(message):
         return int(hashlib.sha1(message.encode('utf-8')).hexdigest(), 16)
