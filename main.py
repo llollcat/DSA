@@ -4,11 +4,13 @@ from tkinter import ttk, simpledialog, messagebox
 from DSA import DSA
 
 if __name__ == '__main__':
-    window_size = "1600x400"
+    window_size = "1350x400"
     # Create the main window
     sender_window = tk.Tk()
     sender_window.title("Отправитель")
     sender_window.geometry(window_size)
+    sender_window.resizable(False, False)
+    sender_window.attributes("-topmost", True)
 
     h = None
     r = None
@@ -134,6 +136,8 @@ if __name__ == '__main__':
     receiver_window = tk.Tk()
     receiver_window.title("Получатель")
     receiver_window.geometry(window_size)
+    receiver_window.resizable(False, False)
+    receiver_window.attributes("-topmost", True)
 
     r_s = None
     s_s = None
@@ -223,7 +227,7 @@ if __name__ == '__main__':
             return
         try:
             h_s = int(hash_text_s.get("1.0", "end-1c"))
-        except:
+        except ValueError:
             messagebox.showerror("Ошибка", "Ошибка в хеше")
             return
         is_sign_valid = dsa.check_sign(h_s, y_s, r_s, s_s)
@@ -232,5 +236,5 @@ if __name__ == '__main__':
 
     ttk.Button(receiver_window, text="Проверить подпись", command=verify).grid(column=3, row=2, sticky=tk.W, padx=5,
                                                                                pady=5)
-
+    sender_window.lift()
     sender_window.mainloop()
