@@ -28,7 +28,7 @@ if __name__ == '__main__':
     ttk.Label(sender_window, text="p").grid(column=0, row=1, sticky=tk.W, padx=5)
     ttk.Label(sender_window, text="q").grid(column=0, row=2, sticky=tk.W, padx=5)
     ttk.Label(sender_window, text="g").grid(column=0, row=3, sticky=tk.W, padx=5)
-    ttk.Label(sender_window, text="Hash:").grid(column=0, row=4, sticky=tk.W, padx=5)
+    ttk.Label(sender_window, text="H:").grid(column=0, row=4, sticky=tk.W, padx=5)
     ttk.Label(sender_window, text="r").grid(column=0, row=5, sticky=tk.W, padx=5)
     ttk.Label(sender_window, text="s").grid(column=0, row=6, sticky=tk.W, padx=5)
     ttk.Label(sender_window, text="Закрытый ключ x").grid(column=0, row=7, sticky=tk.W, padx=5)
@@ -74,7 +74,7 @@ if __name__ == '__main__':
         hash_text.insert("1.0", h)
 
 
-    ttk.Button(sender_window, text="Подсчитать хеш сообщение", command=calculate_hash).grid(column=3, row=1,
+    ttk.Button(sender_window, text="Подсчитать хеш-функцию сообщение", command=calculate_hash).grid(column=3, row=1,
                                                                                             sticky=tk.W,
                                                                                             padx=5, pady=5)
 
@@ -99,7 +99,7 @@ if __name__ == '__main__':
         global label_r_key, label_s_key, h, r, s
 
         if h is None:
-            messagebox.showerror("Ошибка", "Подсчитайте хеш")
+            messagebox.showerror("Ошибка", "Подсчитайте хеш-функцию")
             return
 
         if x is None:
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     ttk.Label(receiver_window, text="p").grid(column=0, row=1, sticky=tk.W, padx=5)
     ttk.Label(receiver_window, text="q").grid(column=0, row=2, sticky=tk.W, padx=5)
     ttk.Label(receiver_window, text="g").grid(column=0, row=3, sticky=tk.W, padx=5)
-    ttk.Label(receiver_window, text="Hash:").grid(column=0, row=4, sticky=tk.W, padx=5)
+    ttk.Label(receiver_window, text="H:").grid(column=0, row=4, sticky=tk.W, padx=5)
     ttk.Label(receiver_window, text="r").grid(column=0, row=5, sticky=tk.W, padx=5)
     ttk.Label(receiver_window, text="s").grid(column=0, row=6, sticky=tk.W, padx=5)
     ttk.Label(receiver_window, text="Открытый ключ y").grid(column=0, row=8, sticky=tk.W, padx=5)
@@ -216,7 +216,7 @@ if __name__ == '__main__':
         hash_text_s.insert("1.0", h_s)
 
 
-    ttk.Button(receiver_window, text="Подсчитать хеш сообщение",
+    ttk.Button(receiver_window, text="Подсчитать хеш-функцию сообщение",
                command=calculate_hash_receiver).grid(column=3, row=1, sticky=tk.W, padx=5, pady=5)
 
 
@@ -228,7 +228,7 @@ if __name__ == '__main__':
         try:
             h_s = int(hash_text_s.get("1.0", "end-1c"))
         except ValueError:
-            messagebox.showerror("Ошибка", "Ошибка в хеше")
+            messagebox.showerror("Ошибка", "Ошибка в хеш-функции")
             return
         is_sign_valid = dsa.check_sign(h_s, y_s, r_s, s_s)
         messagebox.showinfo('Проверка подписи', "Подпись верна" if is_sign_valid else "Подпись не верна")
